@@ -5,15 +5,59 @@
     <title>JobEntertainment</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- 可选：外部样式文件 -->
-    <!-- <link rel="stylesheet" href="style.css"> -->
-
     <style>
         body {
             margin: 0;
             font-family: Arial, Helvetica, sans-serif;
             background-color: #f5f5f5;
             color: #333;
+        }
+
+        /* ===== 密码层 ===== */
+        #password-screen {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #222;
+            color: white;
+        }
+
+        .password-box {
+            background: #333;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            width: 300px;
+        }
+
+        .password-box input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 4px;
+            border: none;
+        }
+
+        .password-box button {
+            margin-top: 15px;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            background: #007bff;
+            color: white;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .password-box button:hover {
+            background: #0056b3;
+        }
+
+        /* ===== 主页面（默认隐藏） ===== */
+        #site-content {
+            display: none;
         }
 
         header {
@@ -30,10 +74,6 @@
             background: white;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        h1, h2 {
-            margin-top: 0;
         }
 
         a.button {
@@ -61,6 +101,18 @@
 
 <body>
 
+<!-- 🔐 密码验证界面 -->
+<div id="password-screen">
+    <div class="password-box">
+        <h2>🔒 访问受限</h2>
+        <p>请输入访问密码</p>
+        <input type="password" id="password-input" placeholder="Password">
+        <button onclick="checkPassword()">进入</button>
+    </div>
+</div>
+
+<!-- 🌐 网站主体 -->
+<div id="site-content">
     <header>
         <h1>JobEntertainment</h1>
         <p>欢迎来到我的 GitHub Pages 网站</p>
@@ -69,15 +121,15 @@
     <main>
         <h2>📌 项目介绍</h2>
         <p>
-            这是 <strong>JobEntertainment</strong> 项目的主页。
-            你可以在这里展示你的网页、作业或前端练习成果。
+            这是 <strong>JobEntertainment</strong> 项目的主页，
+            仅授权用户可以访问。
         </p>
 
         <h2>🚀 功能</h2>
         <ul>
             <li>HTML 页面展示</li>
             <li>GitHub Pages 在线访问</li>
-            <li>支持多页面跳转</li>
+            <li>基础访问控制</li>
         </ul>
 
         <a class="button" href="Privado.html">
@@ -88,9 +140,22 @@
     <footer>
         © 2025 JobEntertainment · Powered by GitHub Pages
     </footer>
+</div>
 
-    <!-- 可选：外部脚本 -->
-    <!-- <script src="script.js"></script> -->
+<script>
+    const PASSWORD = "cyxfd2000"; 
+
+    function checkPassword() {
+        const input = document.getElementById("password-input").value;
+
+        if (input === PASSWORD) {
+            document.getElementById("password-screen").style.display = "none";
+            document.getElementById("site-content").style.display = "block";
+        } else {
+            alert("密码错误！");
+        }
+    }
+</script>
 
 </body>
 </html>
