@@ -1,0 +1,89 @@
+<HTML>
+
+<HEAD>
+<TITLE>Mi primera página Web</TITLE>
+</HEAD>
+
+<BODY bgcolor="#0000ff" text="#FFFFFF" background="IMAGENES/fondo_pagina.jpg" link=red vlink=black>
+<A NAME="inicio">iNICIO</A>
+<MARQUEE><H1><FONT COLOR=RED>Pagina de coches</FONT></H1></MARQUEE><BR>
+marcas principales
+<HR align=center  size=15 width=90%>
+<CENTER>FORMATOS DE LETRAS<BR></CENTER>
+<B>NEGRITA</B><BR>
+<I>CURSIVA</I><BR>
+<S>TACHADO</S><BR>
+<U>SUBRAYADO</U><BR>
+<HR align=center  size=15 width=90%>
+<CENTER>TAMAÑOS DE LETRA</CENTER>
+<H1>CABECERA DE TAMAÑO 1</H1>
+<H2>CABECERA DE TAMAÑO 2</H2>
+<H3>CABECERA DE TAMAÑO 3</H3>
+<H4>CABECERA DE TAMAÑO 4</H4>
+<H5>CABECERA DE TAMAÑO 5</H5>
+<H6>CABECERA DE TAMAÑO 6</H6>
+
+<HR align=center  size=15 width=90%>
+<CENTER>FORMATO DE LAS FUENTES</CENTER>
+<BLOCKQUOTE><FONT size=2 color="#FF0000" face="Arial">Fuente con formato tamaño 2</FONT></BR></BLOCKQUOTE>
+<FONT size=4 color="#FF0000" face="Courier">Fuente con formato tamaño 4</FONT></P>
+<CENTER><FONT size=2>A</FONT><FONT size=4>A</FONT><FONT size=6>A</FONT><FONT size=8>A</FONT><FONT size=6>A</FONT><FONT size=4>A</FONT><FONT size=2>A</FONT></CENTER>
+
+<HR align=center  size=15 width=90%>
+<CENTER><H2>LISTAS SIN NUMERAR</H2></CENTER>
+<UL type=square>
+<LI> una cosa
+<LI> Otra cosa
+<LI> otra más
+</UL>
+
+<HR align=center  size=15 width=90%>
+<CENTER><H2>LISTAS NUMERADAS</H2></CENTER>
+<OL start=1 type=1>
+<LI> una cosa
+<LI> Otra cosa
+<LI> otra más
+</OL>
+
+<HR align=center  size=15 width=90%>
+<CENTER><H2>IMÁGENES</H2></CENTER>
+<CENTER><IMG src="IMAGENES/hommer.png" border=2 heigth=250 width=250 align=top>imagen de Hommer1
+<IMG src="IMAGENES/hommer.png" border=2 heigth=250 width=250 align=middle>imagen de Hommer2</CENTER>
+<BR>Siguiente texto
+
+<HR align=center  size=15 width=90%>
+<CENTER><H2>ENLACES</H2></CENTER>
+<A HREF="http://www.google.com">Enlace a la página de Google</A><BR>
+<A HREF="#inicio">Ir a inicio</A><HR>
+<A HREF="hoja2.html">Ir a mi segunda página</A><BR>
+<A HREF="DOCUMENTOS/bienvenida.docx">abrir documento</A><BR>
+<A HREF="IMAGENES/hommer.png"><IMG src="IMAGENES/hommer.png" heigth=50 width=50 border=2></A>
+
+<HR align=center  size=15 width=90%>
+<CENTER><H2>TABLAS</H2></CENTER>
+<TABLE border=3 width=80% heigth=30% bgcolor=red>
+<TR><TH>Cabecera1</TH><TH>Cabecera2</TH><TH>Cabecera3</TH></TR>
+<TR><TD align=center valign=middle rowspan=2>Celda1</TD><TD align=center valign=middle colspan=2>Celda2</TD></TR>
+<TR><TD align=center valign=middle>Celda5</TD><TD align=center valign=middle>Celda6</TD></TR>
+</TABLE>
+
+<HR align=center  size=15 width=90%>
+<CENTER><H2>VIDEOS</H2></CENTER>
+<embed src="VIDEO/MYB3.flv" hidden="false" autostart="false" width="150" height="100"></embed>
+<embed src="VIDEO/GOLES.AVI" hidden="false" type="video/avi" autostart="false"></embed>
+<embed src="VIDEO/video.mp4" hidden="false" type="video/mp4" autostart="false" width="150" height="100"></embed>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</BODY>
+</HTML>
