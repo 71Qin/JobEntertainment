@@ -1,339 +1,395 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Forum · 春游小分队</title>
+
   <style>
-    html, body { height:100%; margin:0; font-family: Arial, Helvetica, sans-serif; }
-    body { overflow-x:hidden; color:#fff; }
-
-    /* 背景粒子层 */
-    canvas#bg {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: -2;
-      background: linear-gradient(
-        135deg,
-        #fdfbfb,
-        #ebedee
-      );
+    :root{
+      --bg1:#fff7fb;
+      --bg2:#f3fbff;
+      --bg3:#fffdf3;
+      --card:#ffffffd9;
+      --text:#2b2b2b;
+      --muted:#666;
+      --primary:#6aa9ff;
+      --primary2:#ff9fd2;
+      --shadow: 0 10px 30px rgba(0,0,0,.08);
+      --radius: 18px;
     }
 
-
-    /* 轻微遮罩：让文字更清晰 */
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(
-        circle at top,
-        rgba(255,255,255,0.6),
-        rgba(255,255,255,0.15)
-      );
-      z-index: -1;
-      pointer-events: none;
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Arial, Helvetica, sans-serif;
+      color:var(--text);
+      min-height:100vh;
+      overflow-x:hidden;
+      background:
+        radial-gradient(900px 500px at 10% 10%, var(--bg1), transparent 60%),
+        radial-gradient(900px 500px at 90% 10%, var(--bg2), transparent 60%),
+        radial-gradient(900px 500px at 50% 90%, var(--bg3), transparent 60%),
+        linear-gradient(180deg, #ffffff, #fbfbff);
     }
 
+    /* 粒子 canvas */
+    #particles{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:-1;
+    }
 
     header{
-      padding: 18px 16px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      background: rgba(255,255,255,0.75);
-      color: #222;
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid rgba(0,0,0,0.08);
+      width:min(980px, 92vw);
+      margin:22px auto 0;
+      padding:18px 18px 10px;
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.7);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    header h1{
+      margin:0;
+      font-size:22px;
+      letter-spacing:.3px;
+    }
+    header p{
+      margin:8px 0 0;
+      color:var(--muted);
+      line-height:1.6;
     }
 
-    .left h1{ margin:0; font-size:18px; font-weight:700; }
-    .left p{ margin:4px 0 0; font-size:12px; opacity:.85; }
-
-    .controls{
+    .toolbar{
       display:flex;
-      align-items:center;
       gap:10px;
       flex-wrap:wrap;
-      justify-content:flex-end;
+      align-items:center;
+      margin-top:12px;
     }
 
-    button, a.btn{
-      appearance:none;
+    .btn{
       border:none;
-      border-radius: 10px;
-      padding:10px 12px;
-      background: rgba(255,255,255,.14);
-      color:#fff;
       cursor:pointer;
-      font-weight:600;
-      text-decoration:none;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
+      padding:10px 14px;
+      border-radius:14px;
+      color:#fff;
+      background: linear-gradient(90deg, var(--primary), var(--primary2));
+      box-shadow: 0 10px 18px rgba(255,159,210,.18);
+      font-size:14px;
     }
-    button:hover, a.btn:hover{ background: rgba(255,255,255,.22); }
+    .btn:hover{filter:brightness(.98)}
+    .btn.secondary{
+      background:#ffffff;
+      color:#333;
+      border:1px solid rgba(0,0,0,.08);
+      box-shadow:none;
+    }
 
     main{
-      max-width: 980px;
-      margin: 22px auto;
-      padding: 16px;
-    }
-
-    .card{
-      background: rgba(255,255,255,0.85);
-      color: #222;
-      border: 1px solid rgba(0,0,0,0.08);
+      width:min(980px, 92vw);
+      margin:14px auto 30px;
+      padding:18px;
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.7);
       backdrop-filter: blur(10px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
     }
 
-    .hint{
-      margin: 0 0 10px;
-      font-size: 13px;
-      opacity: .9;
-      line-height: 1.5;
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+    }
+
+    .panel{
+      background:#fff;
+      border-radius:16px;
+      border:1px solid rgba(0,0,0,.06);
+      padding:14px;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    label{font-size:13px;color:var(--muted)}
+    input[type="text"]{
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(0,0,0,.08);
+      outline:none;
+      min-width:220px;
+      background:#fff;
+    }
+
+    .note{
+      margin:10px 0 0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
     }
 
     /* giscus 容器 */
-    #giscus-wrap{
-      margin-top: 12px;
+    .giscus-wrap{
+      padding:10px 4px 0;
     }
 
-    /* 移动端 */
-    @media (max-width: 600px){
-      header{ align-items:flex-start; flex-direction:column; }
-      .controls{ width:100%; justify-content:flex-start; }
+    /* 音乐控件（做得更像“背景音乐按钮”） */
+    .music{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .chip{
+      padding:8px 12px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid rgba(0,0,0,.06);
+      font-size:13px;
+      color:#444;
+    }
+
+    footer{
+      width:min(980px, 92vw);
+      margin:0 auto 26px;
+      text-align:center;
+      color:#777;
+      font-size:14px;
     }
   </style>
 </head>
 
 <body>
-  <canvas id="bg"></canvas>
-  <div class="overlay"></div>
+<canvas id="particles"></canvas>
 
-  <header>
-    <div class="left">
-      <h1>共享留言板 / Forum</h1>
+<header>
+  <h1>💬 Forum / 共享留言板</h1>
+  <p>
+    这里用 <strong>giscus</strong>（GitHub Discussions）做评论区/论坛。
+    你可以先设置一个“页面昵称”（只在本页显示），然后在下方发言。
+  </p>
+
+  <div class="toolbar">
+    <button class="btn secondary" onclick="location.href='index.html'">← 返回首页</button>
+    <button class="btn" onclick="scrollToComments()">跳到留言区</button>
+  </div>
+</header>
+
+<main>
+  <div class="grid">
+    <div class="panel">
+      <div class="row">
+        <div>
+          <label>你的页面昵称（仅本页显示，会保存在浏览器）</label><br/>
+          <input id="nickname" type="text" placeholder="比如：Qin / Feihan / 小伙伴" maxlength="24"/>
+        </div>
+        <div>
+          <button class="btn" onclick="saveNick()">保存昵称</button>
+        </div>
+        <div class="chip" id="nickDisplay">当前昵称：未设置</div>
+      </div>
+
+      <p class="note">
+        注意：giscus 的评论显示名来自你的 GitHub 账号，无法在前端随意改成自定义用户名（这是 giscus 的机制）。 :contentReference[oaicite:2]{index=2}
+        我这里做的是“站内显示昵称”，方便你们玩梗/认人。
+      </p>
     </div>
 
-    <div class="controls">
-      <a class="btn" href="index.html">← 返回首页</a>
-      <button id="playBtn">▶ 播放音乐</button>
-      <button id="muteBtn">🔇 静音</button>
-    </div>
-  </header>
+    <div class="panel">
+      <div class="music">
+        <button class="btn" id="musicBtn" onclick="toggleMusic()">▶ 播放背景音乐</button>
+        <span class="chip" id="musicStatus">状态：未播放（需要点击按钮）</span>
+        <span class="chip">提示：浏览器通常禁止自动播放，必须先手动点一次</span>
+      </div>
 
-  <main>
-    <div class="card">
-      <p class="hint">
-        说明：这里使用 <b>giscus</b>（基于 GitHub Discussions）。<br/>
-        你可以把它当成“共享留言板”，任何人用 GitHub 登录后都能留言（取决于你的仓库/Discussion 权限设置）。
+      <!-- 你把 music.m4a 放到 repo 根目录或 assets/ 下，然后改 src -->
+      <audio id="bgm" preload="auto" loop playsinline>
+        <!-- 推荐：同时放 mp3 作为兼容备用 -->
+        <!-- <source src="assets/music.mp3" type="audio/mpeg"> -->
+        <source src="assets/music.m4a" type="audio/mp4">
+        你的浏览器不支持音频播放。
+      </audio>
+
+      <p class="note">
+        如果你现在“黑屏/深色”，通常是主题或 CSS 没覆盖到；这份是浅色马卡龙风。
+        如果 m4a 播放不了，可能是浏览器兼容/编码/MIME 导致。m4a 标准 MIME 常见是 <code>audio/mp4</code>。 :contentReference[oaicite:3]{index=3}
+        最稳做法：再转一份 mp3 一起放（上面已留了 mp3 的 source）。
+      </p>
+    </div>
+
+    <div class="panel" id="comments">
+      <h2 style="margin:0 0 8px;">📝 留言区（giscus）</h2>
+      <p class="note" style="margin-top:0;">
+        需要你先在 giscus 配置页生成脚本参数，并把 <code>data-repo-id</code>、<code>data-category-id</code> 填进去。 :contentReference[oaicite:4]{index=4}
       </p>
 
-      <!-- giscus -->
-      <div id="giscus-wrap">
+      <div class="giscus-wrap">
+        <!-- ✅ giscus 嵌入 -->
         <script src="https://giscus.app/client.js"
-          data-repo="71Qin/JobEntertainment"
-          data-repo-id="R_kgDOQt7F2w"
-          data-category="General"
-          data-category-id="DIC_kwDOQt7F284C0Mzm"
-          data-mapping="pathname"
-          data-strict="0"
-          data-reactions-enabled="1"
-          data-emit-metadata="0"
-          data-input-position="bottom"
-          data-theme="preferred_color_scheme"
-          data-lang="zh-CN"
-          crossorigin="anonymous"
-          async>
-        </script>
+            data-repo="71Qin/JobEntertainment"
+            data-repo-id="R_kgDOQt7F2w"
+            data-category="General"
+            data-category-id="DIC_kwDOQt7F284C0Mzm"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme="preferred_color_scheme"
+            data-lang="zh-CN"
+            crossorigin="anonymous"
+            async>
+        </script>    
       </div>
     </div>
-  </main>
+  </div>
+</main>
 
-  <!-- 背景音乐 -->
-  <audio id="bgm" preload="auto" loop playsinline>
-    <source src="assets/I Miss You-罗百吉&宝贝.m4a" type="audio/mp4">
-  </audio>
+<footer>© 2025 JobEntertainment · Forum</footer>
 
-  <script>
-    /* ========= 1) 粒子背景（会随节奏变化颜色） ========= */
-    const canvas = document.getElementById('bg');
-    const ctx = canvas.getContext('2d', { alpha: true });
+<script>
+  // ====== 昵称：localStorage ======
+  const nickInput = document.getElementById("nickname");
+  const nickDisplay = document.getElementById("nickDisplay");
 
-    function resize(){
-      const dpr = Math.max(1, window.devicePixelRatio || 1);
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
-      canvas.style.width = window.innerWidth + 'px';
-      canvas.style.height = window.innerHeight + 'px';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  function loadNick(){
+    const saved = localStorage.getItem("JE_NICKNAME") || "";
+    if(saved){
+      nickInput.value = saved;
+      nickDisplay.textContent = "当前昵称：" + saved;
+    }else{
+      nickDisplay.textContent = "当前昵称：未设置";
     }
-    window.addEventListener('resize', resize);
-    resize();
+  }
 
-    const particles = [];
-    const COUNT = 180;
-
-    function rand(min, max){ return Math.random() * (max - min) + min; }
-
-    function initParticles(){
-      particles.length = 0;
-      for(let i=0;i<COUNT;i++){
-        particles.push({
-          x: rand(0, window.innerWidth),
-          y: rand(0, window.innerHeight),
-          vx: rand(-0.6, 0.6),
-          vy: rand(-0.6, 0.6),
-          r: rand(1.2, 3.2),
-          hue: rand(0, 360),
-        });
-      }
+  function saveNick(){
+    const v = (nickInput.value || "").trim();
+    if(!v){
+      localStorage.removeItem("JE_NICKNAME");
+      nickDisplay.textContent = "当前昵称：未设置";
+      alert("已清空昵称");
+      return;
     }
-    initParticles();
+    localStorage.setItem("JE_NICKNAME", v);
+    nickDisplay.textContent = "当前昵称：" + v;
+    alert("昵称已保存");
+  }
 
-    let beat = 0;      // 0~1 节奏强度
-    let globalHue = 0; // 全局色相
+  loadNick();
 
-    function draw(){
-      ctx.clearRect(0,0,window.innerWidth, window.innerHeight);
+  function scrollToComments(){
+    document.getElementById("comments").scrollIntoView({behavior:"smooth", block:"start"});
+  }
 
-      // 背景轻微渐变（避免“纯黑”观感）
-      const g = ctx.createRadialGradient(
-        window.innerWidth*0.5, window.innerHeight*0.2, 0,
-        window.innerWidth*0.5, window.innerHeight*0.5, Math.max(window.innerWidth, window.innerHeight)
-      );
-      g.addColorStop(0, `hsla(${(globalHue+30)%360}, 90%, 55%, 0.16)`);
-      g.addColorStop(1, `hsla(${(globalHue+210)%360}, 90%, 35%, 0.06)`);
-      ctx.fillStyle = g;
-      ctx.fillRect(0,0,window.innerWidth, window.innerHeight);
+  // ====== 背景音乐（需要用户点击才能播放） ======
+  const bgm = document.getElementById("bgm");
+  const musicBtn = document.getElementById("musicBtn");
+  const musicStatus = document.getElementById("musicStatus");
 
-      // 粒子
-      for(const p of particles){
-        p.x += p.vx * (1 + beat*1.2);
-        p.y += p.vy * (1 + beat*1.2);
-
-        // 边界循环
-        if(p.x < -20) p.x = window.innerWidth + 20;
-        if(p.x > window.innerWidth + 20) p.x = -20;
-        if(p.y < -20) p.y = window.innerHeight + 20;
-        if(p.y > window.innerHeight + 20) p.y = -20;
-
-        // 粒子颜色跟着音乐：globalHue + 自身偏移
-        const hue = (globalHue + p.hue) % 360;
-        const alpha = 0.35 + beat * 0.35;
-        const radius = p.r * (1 + beat*1.3);
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, radius, 0, Math.PI*2);
-        ctx.fillStyle = `hsla(${hue}, 85%, 65%, ${0.5 + beat * 0.3})`;
-        ctx.fill();
-      }
-
-      // 连线（更有“彩色粒子”感觉）
-      for(let i=0;i<particles.length;i++){
-        for(let j=i+1;j<particles.length;j++){
-          const a = particles[i], b = particles[j];
-          const dx = a.x - b.x, dy = a.y - b.y;
-          const d2 = dx*dx + dy*dy;
-          const maxD = 120;
-          if(d2 < maxD*maxD){
-            const d = Math.sqrt(d2);
-            const t = 1 - d/maxD;
-            const hue = (globalHue + (a.hue+b.hue)/2) % 360;
-            ctx.strokeStyle = `hsla(${hue}, 95%, 65%, ${(0.10 + beat*0.15)*t})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
-          }
-        }
-      }
-
-      requestAnimationFrame(draw);
-    }
-    requestAnimationFrame(draw);
-
-    /* ========= 2) 音乐分析：粒子颜色跟着节奏变化 ========= */
-    const audioEl = document.getElementById('bgm');
-    const playBtn = document.getElementById('playBtn');
-    const muteBtn = document.getElementById('muteBtn');
-
-    let audioCtx = null;
-    let analyser = null;
-    let dataArray = null;
-    let sourceNode = null;
-
-    function setupAudioGraph(){
-      if(audioCtx) return;
-
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 1024;
-
-      sourceNode = audioCtx.createMediaElementSource(audioEl);
-      sourceNode.connect(analyser);
-      analyser.connect(audioCtx.destination);
-
-      dataArray = new Uint8Array(analyser.frequencyBinCount);
-
-      // 循环采样能量 -> beat
-      const tick = () => {
-        if(analyser){
-          analyser.getByteFrequencyData(dataArray);
-
-          // 计算低频能量（鼓点通常在低频）
-          let sum = 0;
-          const n = Math.min(60, dataArray.length); // 取前 60 个频段
-          for(let i=0;i<n;i++) sum += dataArray[i];
-          const avg = sum / n / 255; // 归一化 0~1
-
-          // 平滑，让变化更“节奏感”
-          beat = beat * 0.85 + avg * 0.15;
-
-          // 让色相随时间+节奏一起滚动
-          globalHue = (globalHue + 0.6 + beat*6.0) % 360;
-        }
-        requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    }
-
-    /* ========= 3) 播放控制（解决“音乐无法播放”） =========
-       你现在音乐不响，99% 是因为：浏览器禁止页面自动播放音频。
-       必须由用户点击按钮触发 play() 才允许。
-    */
-    async function startMusic(){
-      try{
-        setupAudioGraph();
-        // Safari/部分浏览器：需要 resume
-        if(audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
-        await audioEl.play();
-        playBtn.textContent = "⏸ 正在播放";
-      }catch(e){
-        // 常见原因：文件路径/格式/MIME/或仍被策略阻止
-        alert("播放失败：请确认 music.m4a 路径正确，并用按钮触发播放。");
-        console.error(e);
-      }
-    }
-
-    playBtn.addEventListener('click', async () => {
-      if(!audioCtx || audioEl.paused){
-        await startMusic();
+  async function toggleMusic(){
+    try{
+      if(bgm.paused){
+        await bgm.play(); // 需要手势触发
+        musicBtn.textContent = "⏸ 暂停背景音乐";
+        musicStatus.textContent = "状态：播放中";
       }else{
-        audioEl.pause();
-        playBtn.textContent = "▶ 播放音乐";
+        bgm.pause();
+        musicBtn.textContent = "▶ 播放背景音乐";
+        musicStatus.textContent = "状态：已暂停";
       }
-    });
+    }catch(e){
+      console.warn(e);
+      alert("播放失败：可能是浏览器限制或音频格式/路径问题。建议加一份 mp3 备用。");
+    }
+  }
 
-    muteBtn.addEventListener('click', () => {
-      audioEl.muted = !audioEl.muted;
-      muteBtn.textContent = audioEl.muted ? "🔈 取消静音" : "🔇 静音";
-    });
-  </script>
+  // ====== 彩色粒子（马卡龙色系） ======
+  const canvas = document.getElementById("particles");
+  const ctx = canvas.getContext("2d");
+
+  let W, H, dpr;
+  function resize(){
+    dpr = Math.max(1, window.devicePixelRatio || 1);
+    W = canvas.width = Math.floor(window.innerWidth * dpr);
+    H = canvas.height = Math.floor(window.innerHeight * dpr);
+    canvas.style.width = window.innerWidth + "px";
+    canvas.style.height = window.innerHeight + "px";
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  const pastel = [
+    "rgba(255, 173, 214, 0.55)",
+    "rgba(170, 216, 255, 0.55)",
+    "rgba(255, 231, 170, 0.55)",
+    "rgba(196, 255, 214, 0.55)",
+    "rgba(212, 192, 255, 0.55)"
+  ];
+
+  const N = 70;
+  const particles = Array.from({length:N}, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: (Math.random() * 3 + 1) * dpr,
+    vx: (Math.random() * 0.6 - 0.3) * dpr,
+    vy: (Math.random() * 0.6 - 0.3) * dpr,
+    c: pastel[(Math.random()*pastel.length)|0]
+  }));
+
+  function tick(){
+    ctx.clearRect(0,0,W,H);
+
+    // 轻微雾化底色
+    ctx.fillStyle = "rgba(255,255,255,0.08)";
+    ctx.fillRect(0,0,W,H);
+
+    for(const p of particles){
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if(p.x < -20*dpr) p.x = W + 20*dpr;
+      if(p.x > W + 20*dpr) p.x = -20*dpr;
+      if(p.y < -20*dpr) p.y = H + 20*dpr;
+      if(p.y > H + 20*dpr) p.y = -20*dpr;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = p.c;
+      ctx.fill();
+    }
+
+    // 连接线（近距离淡淡的）
+    for(let i=0;i<N;i++){
+      for(let j=i+1;j<N;j++){
+        const a = particles[i], b = particles[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        const max = 140 * dpr;
+        if(dist < max){
+          const alpha = (1 - dist/max) * 0.12;
+          ctx.strokeStyle = `rgba(120,120,140,${alpha})`;
+          ctx.lineWidth = 1 * dpr;
+          ctx.beginPath();
+          ctx.moveTo(a.x,a.y);
+          ctx.lineTo(b.x,b.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    requestAnimationFrame(tick);
+  }
+  tick();
+</script>
+
 </body>
 </html>
