@@ -1,239 +1,329 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Forum · JobEntertainment</title>
-
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Forum · 春游小分队</title>
   <style>
-    body{
-      margin:0;
-      font-family: Arial, Helvetica, sans-serif;
-      color:#fff;
-      overflow-x:hidden;
-      background:#000;
-    }
+    html, body { height:100%; margin:0; font-family: Arial, Helvetica, sans-serif; }
+    body { overflow-x:hidden; color:#fff; }
 
-    /* 粒子背景全屏 */
-    #tsparticles{
+    /* 背景粒子层 */
+    canvas#bg {
       position: fixed;
       inset: 0;
-      z-index: 0;
+      width: 100vw;
+      height: 100vh;
+      display:block;
+      z-index: -2;
+      background: #000; 
     }
 
-    /* 页面内容在粒子上面 */
-    .wrap{
-      position: relative;
-      z-index: 1;
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 24px 16px 64px;
+    /* 轻微遮罩：让文字更清晰 */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at top, rgba(0,0,0,.25), rgba(0,0,0,.65));
+      z-index: -1;
+      pointer-events:none;
     }
 
     header{
+      padding: 18px 16px;
       display:flex;
-      gap:12px;
       align-items:center;
       justify-content:space-between;
-      padding: 16px;
-      border-radius: 12px;
-      background: rgba(0,0,0,0.45);
-      backdrop-filter: blur(8px);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+      gap:12px;
+      background: rgba(0,0,0,.35);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(255,255,255,.12);
     }
 
-    header h1{
-      margin:0;
-      font-size: 20px;
-      font-weight: 700;
+    .left h1{ margin:0; font-size:18px; font-weight:700; }
+    .left p{ margin:4px 0 0; font-size:12px; opacity:.85; }
+
+    .controls{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
     }
 
-    .btn{
-      display:inline-block;
-      padding: 10px 14px;
+    button, a.btn{
+      appearance:none;
+      border:none;
       border-radius: 10px;
-      background: rgba(255,255,255,0.14);
+      padding:10px 12px;
+      background: rgba(255,255,255,.14);
       color:#fff;
+      cursor:pointer;
+      font-weight:600;
       text-decoration:none;
-      border: 1px solid rgba(255,255,255,0.18);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
     }
-    .btn:hover{ background: rgba(255,255,255,0.22); }
+    button:hover, a.btn:hover{ background: rgba(255,255,255,.22); }
+
+    main{
+      max-width: 980px;
+      margin: 22px auto;
+      padding: 16px;
+    }
 
     .card{
-      margin-top: 18px;
-      padding: 18px;
-      border-radius: 14px;
-      background: rgba(0,0,0,0.45);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-    }
-
-    .row{
-      display:flex;
-      gap:12px;
-      align-items:center;
-      justify-content:space-between;
-      flex-wrap: wrap;
+      background: rgba(0,0,0,.35);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 16px;
+      padding: 16px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 12px 30px rgba(0,0,0,.25);
     }
 
     .hint{
-      opacity: 0.92;
-      line-height: 1.6;
-      margin: 10px 0 0;
-    }
-
-    /* 背景音乐控制区 */
-    .music{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-
-    .music button{
-      cursor:pointer;
-      border:none;
-      padding: 10px 12px;
-      border-radius: 10px;
-      color:#fff;
-      background: rgba(255,255,255,0.14);
-      border: 1px solid rgba(255,255,255,0.18);
-    }
-    .music button:hover{ background: rgba(255,255,255,0.22); }
-
-    .music input[type="range"]{
-      width: 160px;
+      margin: 0 0 10px;
+      font-size: 13px;
+      opacity: .9;
+      line-height: 1.5;
     }
 
     /* giscus 容器 */
-    .giscus-box{
-      margin-top: 14px;
+    #giscus-wrap{
+      margin-top: 12px;
+    }
+
+    /* 移动端 */
+    @media (max-width: 600px){
+      header{ align-items:flex-start; flex-direction:column; }
+      .controls{ width:100%; justify-content:flex-start; }
     }
   </style>
 </head>
 
 <body>
-  <!-- 彩色粒子背景 -->
-  <div id="tsparticles"></div>
+  <canvas id="bg"></canvas>
+  <div class="overlay"></div>
 
-  <div class="wrap">
-    <header>
-      <h1>💬 Forum / 共享留言板</h1>
-      <a class="btn" href="index.html">← 返回首页</a>
-    </header>
-
-    <div class="card">
-      <div class="row">
-        <div>
-          <div style="font-weight:700;">🎵 背景音乐</div>
-          <div class="hint">提示：浏览器通常会阻止“自动播放”。你需要先点一次“播放”。</div>
-        </div>
-
-        <div class="music">
-          <button id="playBtn">▶️ 播放</button>
-          <button id="pauseBtn">⏸ 暂停</button>
-          <label style="display:flex; gap:8px; align-items:center;">
-            音量
-            <input id="vol" type="range" min="0" max="1" step="0.01" value="0.5"/>
-          </label>
-        </div>
-      </div>
-
-      <!-- bgm -->
-      <audio id="bgm" loop preload="auto">
-        <source src="I Miss You-罗百吉&宝贝.m4a" type="audio/mpeg" />
-      </audio>
+  <header>
+    <div class="left">
+      <h1>共享留言板 / Forum</h1>
     </div>
 
+    <div class="controls">
+      <a class="btn" href="index.html">← 返回首页</a>
+      <button id="playBtn">▶ 播放音乐</button>
+      <button id="muteBtn">🔇 静音</button>
+    </div>
+  </header>
+
+  <main>
     <div class="card">
-      <div style="font-weight:700;">📝 留言板（Giscus）</div>
       <p class="hint">
-        留言会保存到 GitHub Discussions。用户“自定义用户名”这点：giscus 以 GitHub 身份显示（头像/昵称），
-        你无法在页面里强行改名，但用户可以改自己的 GitHub 昵称。
+        说明：这里使用 <b>giscus</b>（基于 GitHub Discussions）。<br/>
+        你可以把它当成“共享留言板”，任何人用 GitHub 登录后都能留言（取决于你的仓库/Discussion 权限设置）。
       </p>
 
-      <div class="giscus-box">
+      <!-- giscus -->
+      <div id="giscus-wrap">
         <script src="https://giscus.app/client.js"
-        data-repo="71Qin/JobEntertainment"
-        data-repo-id="R_kgDOQt7F2w"
-        data-category="General"
-        data-category-id="DIC_kwDOQt7F284C0Mzm"
-        data-mapping="pathname"
-        data-strict="0"
-        data-reactions-enabled="1"
-        data-emit-metadata="0"
-        data-input-position="bottom"
-        data-theme="preferred_color_scheme"
-        data-lang="zh-CN"
-        crossorigin="anonymous"
-        async>
+          data-repo="71Qin/JobEntertainment"
+          data-repo-id="R_kgDOQt7F2w"
+          data-category="General"
+          data-category-id="DIC_kwDOQt7F284C0Mzm"
+          data-mapping="pathname"
+          data-strict="0"
+          data-reactions-enabled="1"
+          data-emit-metadata="0"
+          data-input-position="bottom"
+          data-theme="preferred_color_scheme"
+          data-lang="zh-CN"
+          crossorigin="anonymous"
+          async>
         </script>
       </div>
     </div>
-  </div>
+  </main>
 
-  <!-- tsParticles CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/tsparticles@3/tsparticles.bundle.min.js"></script>
+  <!-- 背景音乐 -->
+  <audio id="bgm" preload="auto" loop playsinline>
+    <source src="assets/I Miss You-罗百吉&宝贝.m4a" type="audio/mp4">
+  </audio>
 
   <script>
-    // ===== 彩色粒子配置 =====
-    tsParticles.load("tsparticles", {
-      fullScreen: { enable: true, zIndex: 0 },
-      fpsLimit: 60,
-      background: { color: "#000000" },
-      particles: {
-        number: { value: 90, density: { enable: true } },
-        color: { value: ["#ff4d4d", "#ffd24d", "#4dff88", "#4dd2ff", "#b84dff"] },
-        shape: { type: "circle" },
-        opacity: { value: { min: 0.35, max: 0.9 } },
-        size: { value: { min: 1, max: 5 } },
-        links: {
-          enable: true,
-          distance: 140,
-          opacity: 0.25,
-          width: 1
-        },
-        move: {
-          enable: true,
-          speed: 1.6,
-          direction: "none",
-          outModes: { default: "out" }
+    /* ========= 1) 粒子背景（会随节奏变化颜色） ========= */
+    const canvas = document.getElementById('bg');
+    const ctx = canvas.getContext('2d', { alpha: true });
+
+    function resize(){
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.width = window.innerWidth + 'px';
+      canvas.style.height = window.innerHeight + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    const particles = [];
+    const COUNT = 180;
+
+    function rand(min, max){ return Math.random() * (max - min) + min; }
+
+    function initParticles(){
+      particles.length = 0;
+      for(let i=0;i<COUNT;i++){
+        particles.push({
+          x: rand(0, window.innerWidth),
+          y: rand(0, window.innerHeight),
+          vx: rand(-0.6, 0.6),
+          vy: rand(-0.6, 0.6),
+          r: rand(1.2, 3.2),
+          hue: rand(0, 360),
+        });
+      }
+    }
+    initParticles();
+
+    let beat = 0;      // 0~1 节奏强度
+    let globalHue = 0; // 全局色相
+
+    function draw(){
+      ctx.clearRect(0,0,window.innerWidth, window.innerHeight);
+
+      // 背景轻微渐变（避免“纯黑”观感）
+      const g = ctx.createRadialGradient(
+        window.innerWidth*0.5, window.innerHeight*0.2, 0,
+        window.innerWidth*0.5, window.innerHeight*0.5, Math.max(window.innerWidth, window.innerHeight)
+      );
+      g.addColorStop(0, `hsla(${(globalHue+30)%360}, 90%, 55%, 0.16)`);
+      g.addColorStop(1, `hsla(${(globalHue+210)%360}, 90%, 35%, 0.06)`);
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,window.innerWidth, window.innerHeight);
+
+      // 粒子
+      for(const p of particles){
+        p.x += p.vx * (1 + beat*1.2);
+        p.y += p.vy * (1 + beat*1.2);
+
+        // 边界循环
+        if(p.x < -20) p.x = window.innerWidth + 20;
+        if(p.x > window.innerWidth + 20) p.x = -20;
+        if(p.y < -20) p.y = window.innerHeight + 20;
+        if(p.y > window.innerHeight + 20) p.y = -20;
+
+        // 粒子颜色跟着音乐：globalHue + 自身偏移
+        const hue = (globalHue + p.hue) % 360;
+        const alpha = 0.35 + beat * 0.35;
+        const radius = p.r * (1 + beat*1.3);
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius, 0, Math.PI*2);
+        ctx.fillStyle = `hsla(${hue}, 95%, 60%, ${alpha})`;
+        ctx.fill();
+      }
+
+      // 连线（更有“彩色粒子”感觉）
+      for(let i=0;i<particles.length;i++){
+        for(let j=i+1;j<particles.length;j++){
+          const a = particles[i], b = particles[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const d2 = dx*dx + dy*dy;
+          const maxD = 120;
+          if(d2 < maxD*maxD){
+            const d = Math.sqrt(d2);
+            const t = 1 - d/maxD;
+            const hue = (globalHue + (a.hue+b.hue)/2) % 360;
+            ctx.strokeStyle = `hsla(${hue}, 95%, 65%, ${(0.10 + beat*0.15)*t})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
         }
-      },
-      interactivity: {
-        events: {
-          onHover: { enable: true, mode: "repulse" },
-          onClick: { enable: true, mode: "push" }
-        },
-        modes: {
-          repulse: { distance: 120 },
-          push: { quantity: 3 }
+      }
+
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+
+    /* ========= 2) 音乐分析：粒子颜色跟着节奏变化 ========= */
+    const audioEl = document.getElementById('bgm');
+    const playBtn = document.getElementById('playBtn');
+    const muteBtn = document.getElementById('muteBtn');
+
+    let audioCtx = null;
+    let analyser = null;
+    let dataArray = null;
+    let sourceNode = null;
+
+    function setupAudioGraph(){
+      if(audioCtx) return;
+
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 1024;
+
+      sourceNode = audioCtx.createMediaElementSource(audioEl);
+      sourceNode.connect(analyser);
+      analyser.connect(audioCtx.destination);
+
+      dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+      // 循环采样能量 -> beat
+      const tick = () => {
+        if(analyser){
+          analyser.getByteFrequencyData(dataArray);
+
+          // 计算低频能量（鼓点通常在低频）
+          let sum = 0;
+          const n = Math.min(60, dataArray.length); // 取前 60 个频段
+          for(let i=0;i<n;i++) sum += dataArray[i];
+          const avg = sum / n / 255; // 归一化 0~1
+
+          // 平滑，让变化更“节奏感”
+          beat = beat * 0.85 + avg * 0.15;
+
+          // 让色相随时间+节奏一起滚动
+          globalHue = (globalHue + 0.6 + beat*6.0) % 360;
         }
-      },
-      detectRetina: true
-    });
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
 
-    // ===== 背景音乐控制 =====
-    const bgm = document.getElementById("bgm");
-    const playBtn = document.getElementById("playBtn");
-    const pauseBtn = document.getElementById("pauseBtn");
-    const vol = document.getElementById("vol");
+    /* ========= 3) 播放控制（解决“音乐无法播放”） =========
+       你现在音乐不响，99% 是因为：浏览器禁止页面自动播放音频。
+       必须由用户点击按钮触发 play() 才允许。
+    */
+    async function startMusic(){
+      try{
+        setupAudioGraph();
+        // Safari/部分浏览器：需要 resume
+        if(audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
+        await audioEl.play();
+        playBtn.textContent = "⏸ 正在播放";
+      }catch(e){
+        // 常见原因：文件路径/格式/MIME/或仍被策略阻止
+        alert("播放失败：请确认 music.m4a 路径正确，并用按钮触发播放。");
+        console.error(e);
+      }
+    }
 
-    bgm.volume = parseFloat(vol.value);
-
-    playBtn.addEventListener("click", async () => {
-      try {
-        await bgm.play();
-      } catch (e) {
-        alert("播放失败：浏览器可能阻止自动播放。请再点一次播放，或检查音频路径是否正确。");
+    playBtn.addEventListener('click', async () => {
+      if(!audioCtx || audioEl.paused){
+        await startMusic();
+      }else{
+        audioEl.pause();
+        playBtn.textContent = "▶ 播放音乐";
       }
     });
 
-    pauseBtn.addEventListener("click", () => bgm.pause());
-
-    vol.addEventListener("input", () => {
-      bgm.volume = parseFloat(vol.value);
+    muteBtn.addEventListener('click', () => {
+      audioEl.muted = !audioEl.muted;
+      muteBtn.textContent = audioEl.muted ? "🔈 取消静音" : "🔇 静音";
     });
   </script>
 </body>
