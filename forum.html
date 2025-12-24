@@ -100,26 +100,14 @@
       box-shadow: var(--shadow);
     }
 
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:14px;
-    }
-
+    .grid{display:grid;grid-template-columns:1fr;gap:14px}
     .panel{
       background:#fff;
       border-radius:16px;
       border:1px solid rgba(0,0,0,.06);
       padding:14px;
     }
-
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
     label{font-size:13px;color:var(--muted)}
     input[type="text"]{
       padding:10px 12px;
@@ -128,26 +116,6 @@
       outline:none;
       min-width:220px;
       background:#fff;
-    }
-
-    .note{
-      margin:10px 0 0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.6;
-    }
-
-    /* giscus 容器 */
-    .giscus-wrap{
-      padding:10px 4px 0;
-    }
-
-    /* 音乐控件（做得更像“背景音乐按钮”） */
-    .music{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
     }
     .chip{
       padding:8px 12px;
@@ -158,6 +126,8 @@
       color:#444;
     }
 
+    .giscus-wrap{padding:10px 4px 0;}
+
     footer{
       width:min(980px, 92vw);
       margin:0 auto 26px;
@@ -165,214 +135,309 @@
       color:#777;
       font-size:14px;
     }
+
+    /* ===== 浅色播放器（Playlist） ===== */
+    #bgm-player{
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      width: 320px;
+      max-width: calc(100vw - 32px);
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      padding: 12px;
+      z-index: 9999;
+      color: #222;
+    }
+    #bgm-player .bgm-title{font-weight:700;margin-bottom:8px;}
+    #bgm-audio{width:100%;}
+    #bgm-player .bgm-controls{
+      display:flex;align-items:center;gap:10px;margin-top:10px;
+    }
+    #bgm-player button{
+      border:none;border-radius:10px;padding:8px 10px;cursor:pointer;
+      background:#f0f2f5;
+    }
+    #bgm-player button:hover{background:#e6e9ef;}
+    #bgm-player .bgm-loop{margin-left:auto;font-size:14px;user-select:none;}
+    #bgm-list{
+      list-style:none;padding:0;margin:10px 0 0 0;
+      max-height:160px;overflow:auto;
+    }
+    #bgm-list li{
+      padding:8px 10px;border-radius:10px;cursor:pointer;
+      background: rgba(0,0,0,0.04);
+      margin-bottom: 8px;
+    }
+    #bgm-list li:hover{background: rgba(0,0,0,0.07);}
+    #bgm-list li.active{
+      outline: 2px solid rgba(0,123,255,0.45);
+      background: rgba(0,123,255,0.10);
+    }
   </style>
 </head>
 
 <body>
-<canvas id="particles"></canvas>
+  <canvas id="particles"></canvas>
 
-<header>
-  <h1>💬 Forum / 共享留言板</h1>
-  <p>
-    这里用 <strong>giscus</strong>（GitHub Discussions）做评论区/论坛。
-    你可以先设置一个“页面昵称”（只在本页显示），然后在下方发言。
-  </p>
+  <header>
+    <h1>💬 Forum / 共享留言板</h1>
+    <p>
+      这里用 <strong>giscus</strong>（GitHub Discussions）做评论区/论坛。
+      你可以先设置一个“页面昵称”（只在本页显示），然后在下方发言。
+    </p>
 
-  <div class="toolbar">
-    <button class="btn secondary" onclick="location.href='index.html'">← 返回首页</button>
-    <button class="btn" onclick="scrollToComments()">跳到留言区</button>
-  </div>
-</header>
+    <div class="toolbar">
+      <button class="btn secondary" onclick="location.href='index.html'">← 返回首页</button>
+      <button class="btn" onclick="scrollToComments()">跳到留言区</button>
+    </div>
+  </header>
 
-<main>
-  <div class="grid">
-    <div class="panel">
-      <div class="row">
-        <div>
-          <label>你的页面昵称（仅本页显示，会保存在浏览器）</label><br/>
-          <input id="nickname" type="text" placeholder="比如：Qin / Feihan / 小伙伴" maxlength="24"/>
+  <main>
+    <div class="grid">
+      <div class="panel">
+        <div class="row">
+          <div>
+            <label>你的页面昵称（仅本页显示，会保存在浏览器）</label><br/>
+            <input id="nickname" type="text" placeholder="比如：Qin / Feihan / 小伙伴" maxlength="24"/>
+          </div>
+          <div>
+            <button class="btn" onclick="saveNick()">保存昵称</button>
+          </div>
+          <div class="chip" id="nickDisplay">当前昵称：未设置</div>
+          <div class="chip">提示：浏览器通常禁止自动播放，需手动点播放器按钮一次</div>
         </div>
-        <div>
-          <button class="btn" onclick="saveNick()">保存昵称</button>
+      </div>
+
+      <div class="panel" id="comments">
+        <h2 style="margin:0 0 8px;">📝 留言区（giscus）</h2>
+        <div class="giscus-wrap">
+          <script src="https://giscus.app/client.js"
+              data-repo="71Qin/JobEntertainment"
+              data-repo-id="R_kgDOQt7F2w"
+              data-category="General"
+              data-category-id="DIC_kwDOQt7F284C0Mzm"
+              data-mapping="pathname"
+              data-strict="0"
+              data-reactions-enabled="1"
+              data-emit-metadata="0"
+              data-input-position="bottom"
+              data-theme="preferred_color_scheme"
+              data-lang="zh-CN"
+              crossorigin="anonymous"
+              async>
+          </script>
         </div>
-        <div class="chip" id="nickDisplay">当前昵称：未设置</div>
       </div>
     </div>
+  </main>
 
-    <div class="panel">
-      <div class="music">
-        <button class="btn" id="musicBtn" onclick="toggleMusic()">▶ 播放背景音乐</button>
-        <span class="chip" id="musicStatus">状态：未播放（需要点击按钮）</span>
-        <span class="chip">提示：浏览器通常禁止自动播放，必须先手动点一次</span>
-      </div>
+  <footer>© 2025 JobEntertainment · Forum</footer>
 
-     
-      <audio id="bgm" preload="auto" loop playsinline>
-        <source src="assets/I Miss You-罗百吉&宝贝.m4a" type="audio/mp4">
-      </audio>
+  <!-- 🎵 只保留这一套 BGM 播放器（Playlist） -->
+  <div id="bgm-player">
+    <div class="bgm-title">🎵 Background Music</div>
+    <audio id="bgm-audio" controls preload="metadata" playsinline></audio>
 
+    <div class="bgm-controls">
+      <button id="prevBtn">⏮</button>
+      <button id="playBtn">▶</button>
+      <button id="nextBtn">⏭</button>
+      <label class="bgm-loop">
+        <input type="checkbox" id="loopChk" />
+        Loop
+      </label>
     </div>
 
-    <div class="panel" id="comments">
-      <h2 style="margin:0 0 8px;">📝 留言区（giscus）</h2>
-      <div class="giscus-wrap">
-        <!-- ✅ giscus 嵌入 -->
-        <script src="https://giscus.app/client.js"
-            data-repo="71Qin/JobEntertainment"
-            data-repo-id="R_kgDOQt7F2w"
-            data-category="General"
-            data-category-id="DIC_kwDOQt7F284C0Mzm"
-            data-mapping="pathname"
-            data-strict="0"
-            data-reactions-enabled="1"
-            data-emit-metadata="0"
-            data-input-position="bottom"
-            data-theme="preferred_color_scheme"
-            data-lang="zh-CN"
-            crossorigin="anonymous"
-            async>
-        </script>    
-      </div>
-    </div>
+    <ul id="bgm-list"></ul>
   </div>
-</main>
 
-<footer>© 2025 JobEntertainment · Forum</footer>
+  <script>
+    // ====== 昵称：localStorage ======
+    const nickInput = document.getElementById("nickname");
+    const nickDisplay = document.getElementById("nickDisplay");
 
-<script>
-  // ====== 昵称：localStorage ======
-  const nickInput = document.getElementById("nickname");
-  const nickDisplay = document.getElementById("nickDisplay");
-
-  function loadNick(){
-    const saved = localStorage.getItem("JE_NICKNAME") || "";
-    if(saved){
-      nickInput.value = saved;
-      nickDisplay.textContent = "当前昵称：" + saved;
-    }else{
-      nickDisplay.textContent = "当前昵称：未设置";
-    }
-  }
-
-  function saveNick(){
-    const v = (nickInput.value || "").trim();
-    if(!v){
-      localStorage.removeItem("JE_NICKNAME");
-      nickDisplay.textContent = "当前昵称：未设置";
-      alert("已清空昵称");
-      return;
-    }
-    localStorage.setItem("JE_NICKNAME", v);
-    nickDisplay.textContent = "当前昵称：" + v;
-    alert("昵称已保存");
-  }
-
-  loadNick();
-
-  function scrollToComments(){
-    document.getElementById("comments").scrollIntoView({behavior:"smooth", block:"start"});
-  }
-
-  // ====== 背景音乐（需要用户点击才能播放） ======
-  const bgm = document.getElementById("bgm");
-  const musicBtn = document.getElementById("musicBtn");
-  const musicStatus = document.getElementById("musicStatus");
-
-  async function toggleMusic(){
-    try{
-      if(bgm.paused){
-        await bgm.play(); // 需要手势触发
-        musicBtn.textContent = "⏸ 暂停背景音乐";
-        musicStatus.textContent = "状态：播放中";
+    function loadNick(){
+      const saved = localStorage.getItem("JE_NICKNAME") || "";
+      if(saved){
+        nickInput.value = saved;
+        nickDisplay.textContent = "当前昵称：" + saved;
       }else{
-        bgm.pause();
-        musicBtn.textContent = "▶ 播放背景音乐";
-        musicStatus.textContent = "状态：已暂停";
+        nickDisplay.textContent = "当前昵称：未设置";
       }
-    }catch(e){
-      console.warn(e);
-      alert("播放失败：可能是浏览器限制或音频格式/路径问题。建议加一份 mp3 备用。");
-    }
-  }
-
-  // ====== 彩色粒子（马卡龙色系） ======
-  const canvas = document.getElementById("particles");
-  const ctx = canvas.getContext("2d");
-
-  let W, H, dpr;
-  function resize(){
-    dpr = Math.max(1, window.devicePixelRatio || 1);
-    W = canvas.width = Math.floor(window.innerWidth * dpr);
-    H = canvas.height = Math.floor(window.innerHeight * dpr);
-    canvas.style.width = window.innerWidth + "px";
-    canvas.style.height = window.innerHeight + "px";
-  }
-  window.addEventListener("resize", resize);
-  resize();
-
-  const pastel = [
-    "rgba(255, 173, 214, 0.55)",
-    "rgba(170, 216, 255, 0.55)",
-    "rgba(255, 231, 170, 0.55)",
-    "rgba(196, 255, 214, 0.55)",
-    "rgba(212, 192, 255, 0.55)"
-  ];
-
-  const N = 70;
-  const particles = Array.from({length:N}, () => ({
-    x: Math.random() * W,
-    y: Math.random() * H,
-    r: (Math.random() * 3 + 1) * dpr,
-    vx: (Math.random() * 0.6 - 0.3) * dpr,
-    vy: (Math.random() * 0.6 - 0.3) * dpr,
-    c: pastel[(Math.random()*pastel.length)|0]
-  }));
-
-  function tick(){
-    ctx.clearRect(0,0,W,H);
-
-    // 轻微雾化底色
-    ctx.fillStyle = "rgba(255,255,255,0.08)";
-    ctx.fillRect(0,0,W,H);
-
-    for(const p of particles){
-      p.x += p.vx;
-      p.y += p.vy;
-
-      if(p.x < -20*dpr) p.x = W + 20*dpr;
-      if(p.x > W + 20*dpr) p.x = -20*dpr;
-      if(p.y < -20*dpr) p.y = H + 20*dpr;
-      if(p.y > H + 20*dpr) p.y = -20*dpr;
-
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-      ctx.fillStyle = p.c;
-      ctx.fill();
     }
 
-    // 连接线（近距离淡淡的）
-    for(let i=0;i<N;i++){
-      for(let j=i+1;j<N;j++){
-        const a = particles[i], b = particles[j];
-        const dx = a.x - b.x, dy = a.y - b.y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        const max = 140 * dpr;
-        if(dist < max){
-          const alpha = (1 - dist/max) * 0.12;
-          ctx.strokeStyle = `rgba(120,120,140,${alpha})`;
-          ctx.lineWidth = 1 * dpr;
-          ctx.beginPath();
-          ctx.moveTo(a.x,a.y);
-          ctx.lineTo(b.x,b.y);
-          ctx.stroke();
+    function saveNick(){
+      const v = (nickInput.value || "").trim();
+      if(!v){
+        localStorage.removeItem("JE_NICKNAME");
+        nickDisplay.textContent = "当前昵称：未设置";
+        alert("已清空昵称");
+        return;
+      }
+      localStorage.setItem("JE_NICKNAME", v);
+      nickDisplay.textContent = "当前昵称：" + v;
+      alert("昵称已保存");
+    }
+
+    function scrollToComments(){
+      document.getElementById("comments").scrollIntoView({behavior:"smooth", block:"start"});
+    }
+
+    loadNick();
+
+    // ====== 彩色粒子背景 ======
+    const canvas = document.getElementById("particles");
+    const ctx = canvas.getContext("2d");
+
+    let W, H, dpr;
+    function resize(){
+      dpr = Math.max(1, window.devicePixelRatio || 1);
+      W = canvas.width = Math.floor(window.innerWidth * dpr);
+      H = canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.width = window.innerWidth + "px";
+      canvas.style.height = window.innerHeight + "px";
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    const pastel = [
+      "rgba(255, 173, 214, 0.55)",
+      "rgba(170, 216, 255, 0.55)",
+      "rgba(255, 231, 170, 0.55)",
+      "rgba(196, 255, 214, 0.55)",
+      "rgba(212, 192, 255, 0.55)"
+    ];
+
+    const N = 70;
+    const particles = Array.from({length:N}, () => ({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: (Math.random() * 3 + 1) * dpr,
+      vx: (Math.random() * 0.6 - 0.3) * dpr,
+      vy: (Math.random() * 0.6 - 0.3) * dpr,
+      c: pastel[(Math.random()*pastel.length)|0]
+    }));
+
+    function tick(){
+      ctx.clearRect(0,0,W,H);
+
+      // 轻微雾化底色（保持浅色）
+      ctx.fillStyle = "rgba(255,255,255,0.08)";
+      ctx.fillRect(0,0,W,H);
+
+      for(const p of particles){
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if(p.x < -20*dpr) p.x = W + 20*dpr;
+        if(p.x > W + 20*dpr) p.x = -20*dpr;
+        if(p.y < -20*dpr) p.y = H + 20*dpr;
+        if(p.y > H + 20*dpr) p.y = -20*dpr;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        ctx.fillStyle = p.c;
+        ctx.fill();
+      }
+
+      // 连接线
+      for(let i=0;i<N;i++){
+        for(let j=i+1;j<N;j++){
+          const a = particles[i], b = particles[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          const max = 140 * dpr;
+          if(dist < max){
+            const alpha = (1 - dist/max) * 0.12;
+            ctx.strokeStyle = `rgba(120,120,140,${alpha})`;
+            ctx.lineWidth = 1 * dpr;
+            ctx.beginPath();
+            ctx.moveTo(a.x,a.y);
+            ctx.lineTo(b.x,b.y);
+            ctx.stroke();
+          }
         }
       }
+
+      requestAnimationFrame(tick);
+    }
+    tick();
+
+    const PLAYLIST = [
+      { title: "I Miss You", src: "assets/I Miss You-罗百吉&宝贝.m4a" },
+      { title: "画", src: "assets/邓紫棋-画.m4a" },
+      { title: "Sakura Tears", src: "assets/Sakura Tears.m4a" },
+    ];
+
+    const audio = document.getElementById("bgm-audio");
+    const listEl = document.getElementById("bgm-list");
+    const playBtn = document.getElementById("playBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const loopChk = document.getElementById("loopChk");
+
+    let idx = 0;
+
+    function renderList(){
+      listEl.innerHTML = "";
+      PLAYLIST.forEach((t, i) => {
+        const li = document.createElement("li");
+        li.textContent = t.title;
+        li.className = (i === idx) ? "active" : "";
+        li.onclick = async () => {
+          idx = i;
+          loadTrack();
+          // 点击列表属于“用户手势”，可以尝试直接播放
+          try{ await audio.play(); playBtn.textContent="⏸"; }catch(e){ playBtn.textContent="▶"; }
+        };
+        listEl.appendChild(li);
+      });
     }
 
-    requestAnimationFrame(tick);
-  }
-  tick();
-</script>
+    function loadTrack(){
+      audio.src = PLAYLIST[idx].src;
+      renderList();
+    }
 
+    function playOrPause(){
+      if (audio.paused){
+        audio.play().then(()=> playBtn.textContent="⏸").catch(()=>{});
+      }else{
+        audio.pause();
+        playBtn.textContent="▶";
+      }
+    }
+
+    function prev(){
+      idx = (idx - 1 + PLAYLIST.length) % PLAYLIST.length;
+      loadTrack();
+      audio.play().then(()=> playBtn.textContent="⏸").catch(()=>{ playBtn.textContent="▶"; });
+    }
+
+    function next(){
+      idx = (idx + 1) % PLAYLIST.length;
+      loadTrack();
+      audio.play().then(()=> playBtn.textContent="⏸").catch(()=>{ playBtn.textContent="▶"; });
+    }
+
+    audio.addEventListener("ended", () => {
+      if (!audio.loop) next();
+    });
+
+    loopChk.addEventListener("change", () => {
+      audio.loop = loopChk.checked;
+    });
+
+    playBtn.addEventListener("click", playOrPause);
+    prevBtn.addEventListener("click", prev);
+    nextBtn.addEventListener("click", next);
+
+    // 初始化
+    loadTrack();
+  </script>
 </body>
 </html>
