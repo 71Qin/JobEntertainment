@@ -6,12 +6,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
-        }
+  body{
+    margin:0;
+    font-family: Arial, Helvetica, sans-serif;
+    color:#333;
+    min-height:100vh;
+    overflow-x:hidden;
+
+    /* 离谱五彩背景 */
+    background: radial-gradient(circle at 10% 10%, #ff00cc 0%, transparent 40%),
+                radial-gradient(circle at 90% 20%, #00ffea 0%, transparent 45%),
+                radial-gradient(circle at 30% 90%, #ffee00 0%, transparent 45%),
+                radial-gradient(circle at 80% 85%, #7b00ff 0%, transparent 45%),
+                linear-gradient(120deg, #ff3d00, #00c853, #2979ff, #d500f9);
+    background-size: 200% 200%;
+    animation: bgMove 8s ease-in-out infinite alternate;
+  }
+
+  @keyframes bgMove{
+    0%{ background-position: 0% 50%; filter:hue-rotate(0deg) saturate(140%); }
+    100%{ background-position: 100% 50%; filter:hue-rotate(120deg) saturate(180%); }
+  }
+
+  /* 更离谱一点：加一层霓虹噪点闪烁 */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background:
+      repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0, rgba(255,255,255,.06) 1px, transparent 2px, transparent 6px),
+      repeating-linear-gradient(90deg, rgba(0,0,0,.06) 0, rgba(0,0,0,.06) 1px, transparent 2px, transparent 6px);
+    mix-blend-mode: overlay;
+    opacity:.35;
+    animation: flicker 2.2s infinite steps(2);
+  }
+  @keyframes flicker{
+    0%{opacity:.22}
+    50%{opacity:.45}
+    100%{opacity:.28}
+  }
+
+  main{
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.86);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+  }
+
+  a.button{
+    display:inline-block;
+    margin-top: 14px;
+    margin-right: 10px;
+    padding: 12px 20px;
+    background: rgba(0,0,0,.85);
+    color:#fff;
+    text-decoration:none;
+    border-radius: 999px;
+    border: 2px solid rgba(255,255,255,.35);
+    box-shadow: 0 0 20px rgba(255,255,255,.12);
+    transition: transform .12s ease, filter .12s ease;
+  }
+  a.button:hover{
+    transform: translateY(-2px) scale(1.02);
+    filter: hue-rotate(60deg) saturate(160%);
+  }
 
         /* ===== 密码层 ===== */
         #password-screen {
@@ -138,12 +200,9 @@
 
 
         
-        <a class="button" href="Privado.html">
-            前往 Privado 页面
-        </a>
-        <a class="button" href="forum.html">
-            进入 Forum 留言板
-        </a>
+        <a class="button" href="forum.html">进入 Forum 留言板</a>
+        <a class="button" href="Privado.html">前往 Privado 页面</a>
+
     </main>
 
     <footer>
