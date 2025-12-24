@@ -197,11 +197,6 @@
         </div>
         <div class="chip" id="nickDisplay">当前昵称：未设置</div>
       </div>
-
-      <p class="note">
-        注意：giscus 的评论显示名来自你的 GitHub 账号，无法在前端随意改成自定义用户名（这是 giscus 的机制）。 :contentReference[oaicite:2]{index=2}
-        我这里做的是“站内显示昵称”，方便你们玩梗/认人。
-      </p>
     </div>
 
     <div class="panel">
@@ -211,19 +206,11 @@
         <span class="chip">提示：浏览器通常禁止自动播放，必须先手动点一次</span>
       </div>
 
-      <!-- 你把 music.m4a 放到 repo 根目录或 assets/ 下，然后改 src -->
+     
       <audio id="bgm" preload="auto" loop playsinline>
-        <!-- 推荐：同时放 mp3 作为兼容备用 -->
-        <!-- <source src="assets/music.mp3" type="audio/mpeg"> -->
-        <source src="assets/music.m4a" type="audio/mp4">
-        你的浏览器不支持音频播放。
+        <source src="assets/I Miss You-罗百吉&宝贝.m4a" type="audio/mp4">
       </audio>
 
-      <p class="note">
-        如果你现在“黑屏/深色”，通常是主题或 CSS 没覆盖到；这份是浅色马卡龙风。
-        如果 m4a 播放不了，可能是浏览器兼容/编码/MIME 导致。m4a 标准 MIME 常见是 <code>audio/mp4</code>。 :contentReference[oaicite:3]{index=3}
-        最稳做法：再转一份 mp3 一起放（上面已留了 mp3 的 source）。
-      </p>
     </div>
 
     <div class="panel" id="comments">
