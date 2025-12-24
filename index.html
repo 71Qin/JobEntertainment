@@ -1,228 +1,220 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <title>JobEntertainment</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>JobEntertainment</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <style>
-  body{
-    margin:0;
-    font-family: Arial, Helvetica, sans-serif;
-    color:#333;
-    min-height:100vh;
-    overflow-x:hidden;
+  <style>
+    :root{
+      --bg1:#fff7fb;
+      --bg2:#f3fbff;
+      --bg3:#fffdf3;
+      --card:#ffffffcc;
+      --text:#2b2b2b;
+      --muted:#666;
+      --primary:#6aa9ff;
+      --primary2:#ff9fd2;
+      --shadow: 0 10px 30px rgba(0,0,0,.08);
+      --radius: 18px;
+    }
 
-    /* 离谱五彩背景 */
-    background: radial-gradient(circle at 10% 10%, #ff00cc 0%, transparent 40%),
-                radial-gradient(circle at 90% 20%, #00ffea 0%, transparent 45%),
-                radial-gradient(circle at 30% 90%, #ffee00 0%, transparent 45%),
-                radial-gradient(circle at 80% 85%, #7b00ff 0%, transparent 45%),
-                linear-gradient(120deg, #ff3d00, #00c853, #2979ff, #d500f9);
-    background-size: 200% 200%;
-    animation: bgMove 8s ease-in-out infinite alternate;
-  }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Arial, Helvetica, sans-serif;
+      color:var(--text);
+      min-height:100vh;
+      background:
+        radial-gradient(900px 500px at 10% 10%, var(--bg1), transparent 60%),
+        radial-gradient(900px 500px at 90% 10%, var(--bg2), transparent 60%),
+        radial-gradient(900px 500px at 50% 90%, var(--bg3), transparent 60%),
+        linear-gradient(180deg, #ffffff, #fbfbff);
+    }
 
-  @keyframes bgMove{
-    0%{ background-position: 0% 50%; filter:hue-rotate(0deg) saturate(140%); }
-    100%{ background-position: 100% 50%; filter:hue-rotate(120deg) saturate(180%); }
-  }
+    /* ===== 密码层 ===== */
+    #password-screen{
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:18px;
+      background:
+        radial-gradient(900px 500px at 10% 10%, #ffe8f5, transparent 60%),
+        radial-gradient(900px 500px at 90% 10%, #e8f6ff, transparent 60%),
+        radial-gradient(900px 500px at 50% 90%, #fff6da, transparent 60%),
+        linear-gradient(180deg, #fff, #fbfbff);
+    }
 
-  /* 更离谱一点：加一层霓虹噪点闪烁 */
-  body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    background:
-      repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0, rgba(255,255,255,.06) 1px, transparent 2px, transparent 6px),
-      repeating-linear-gradient(90deg, rgba(0,0,0,.06) 0, rgba(0,0,0,.06) 1px, transparent 2px, transparent 6px);
-    mix-blend-mode: overlay;
-    opacity:.35;
-    animation: flicker 2.2s infinite steps(2);
-  }
-  @keyframes flicker{
-    0%{opacity:.22}
-    50%{opacity:.45}
-    100%{opacity:.28}
-  }
+    .password-box{
+      width:min(360px, 92vw);
+      background:var(--card);
+      backdrop-filter: blur(10px);
+      border:1px solid rgba(255,255,255,.7);
+      box-shadow: var(--shadow);
+      padding:26px;
+      border-radius: var(--radius);
+      text-align:center;
+    }
 
-  main{
-    max-width: 900px;
-    margin: 40px auto;
-    padding: 20px;
-    border-radius: 14px;
-    background: rgba(255,255,255,.86);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.18);
-  }
+    .password-box h2{margin:0 0 8px 0}
+    .password-box p{margin:0 0 12px 0; color:var(--muted)}
 
-  a.button{
-    display:inline-block;
-    margin-top: 14px;
-    margin-right: 10px;
-    padding: 12px 20px;
-    background: rgba(0,0,0,.85);
-    color:#fff;
-    text-decoration:none;
-    border-radius: 999px;
-    border: 2px solid rgba(255,255,255,.35);
-    box-shadow: 0 0 20px rgba(255,255,255,.12);
-    transition: transform .12s ease, filter .12s ease;
-  }
-  a.button:hover{
-    transform: translateY(-2px) scale(1.02);
-    filter: hue-rotate(60deg) saturate(160%);
-  }
+    .password-box input{
+      width:100%;
+      padding:12px 12px;
+      border-radius:12px;
+      border:1px solid rgba(0,0,0,.08);
+      outline:none;
+      background:#fff;
+      font-size:15px;
+    }
 
-        /* ===== 密码层 ===== */
-        #password-screen {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #222;
-            color: white;
-        }
+    .password-box button{
+      margin-top:12px;
+      width:100%;
+      padding:12px 14px;
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      font-size:16px;
+      color:#fff;
+      background: linear-gradient(90deg, var(--primary), var(--primary2));
+      box-shadow: 0 10px 18px rgba(106,169,255,.25);
+    }
+    .password-box button:hover{filter:brightness(.98)}
 
-        .password-box {
-            background: #333;
-            padding: 30px;
-            border-radius: 8px;
-            text-align: center;
-            width: 300px;
-        }
+    /* ===== 主页面（默认隐藏） ===== */
+    #site-content{display:none}
 
-        .password-box input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 15px;
-            border-radius: 4px;
-            border: none;
-        }
+    header{
+      padding:34px 18px 12px;
+      text-align:center;
+    }
+    header h1{
+      margin:0;
+      font-size:28px;
+      letter-spacing:.5px;
+    }
+    header p{
+      margin:10px 0 0;
+      color:var(--muted);
+    }
 
-        .password-box button {
-            margin-top: 15px;
-            padding: 10px;
-            width: 100%;
-            border: none;
-            background: #007bff;
-            color: white;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+    main{
+      width:min(980px, 92vw);
+      margin:18px auto 30px;
+      padding:22px;
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.7);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
 
-        .password-box button:hover {
-            background: #0056b3;
-        }
+    .row{
+      display:flex;
+      gap:18px;
+      flex-wrap:wrap;
+    }
+    .col{
+      flex:1 1 320px;
+      padding:16px;
+      background:#fff;
+      border-radius:16px;
+      border:1px solid rgba(0,0,0,.06);
+    }
 
-        /* ===== 主页面（默认隐藏） ===== */
-        #site-content {
-            display: none;
-        }
+    a.button{
+      display:inline-block;
+      margin-top:14px;
+      padding:12px 18px;
+      background: linear-gradient(90deg, var(--primary), var(--primary2));
+      color:white;
+      text-decoration:none;
+      border-radius:14px;
+      box-shadow: 0 10px 18px rgba(255,159,210,.18);
+    }
+    a.button:hover{filter:brightness(.98)}
 
-        header {
-            background-color: #222;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
+    a.link{
+      color:#3a7ee6;
+      text-decoration:none;
+    }
+    a.link:hover{text-decoration:underline}
 
-        main {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        a.button {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 20px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-
-        a.button:hover {
-            background-color: #0056b3;
-        }
-
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: #777;
-            font-size: 14px;
-        }
-    </style>
+    footer{
+      text-align:center;
+      padding:18px;
+      color:#777;
+      font-size:14px;
+    }
+  </style>
 </head>
 
 <body>
 
 <!-- 🔐 密码验证界面 -->
 <div id="password-screen">
-    <div class="password-box">
-        <h2>🔒 访问受限</h2>
-        <p>请输入访问密码</p>
-        <input type="password" id="password-input" placeholder="Password">
-        <button onclick="checkPassword()">进入</button>
-    </div>
+  <div class="password-box">
+    <h2>🔒 访问受限</h2>
+    <p>请输入访问密码</p>
+    <input type="password" id="password-input" placeholder="Password" />
+    <button onclick="checkPassword()">进入</button>
+  </div>
 </div>
 
 <!-- 🌐 网站主体 -->
 <div id="site-content">
-    <header>
-        <h1>春游小分队
-        <p>谁读谁是傻逼
-    </header>
+  <header>
+    <h1> 春游小分队 </h1>
+    <p> xxxx </p>
+  </header>
 
-    <main>
-        <h2>📌 项目介绍</h2>
-        <p>
-            这是 <strong>JobEntertainment</strong> 项目的主页，
-            仅授权用户可以访问。
+  <main>
+    <div class="row">
+      <div class="col">
+        <h2 style="margin:0 0 8px;">📌 项目介绍</h2>
+        <p style="margin:0;color:#555;line-height:1.6;">
+          这是 <strong>JobEntertainment</strong> 的主页。你可以从这里进入论坛（共享留言板）。
         </p>
 
-        <h2>🚀 功能</h2>
-        <ul>
-            <li>HTML 页面展示</li>
-            <li>GitHub Pages 在线访问</li>
-            <li>基础访问控制</li>
+        <a class="button" href="forum.html">进入 Forum / 留言板</a>
+      </div>
+
+      <div class="col">
+        <h2 style="margin:0 0 8px;">🚀 功能</h2>
+        <ul style="margin:0;padding-left:18px;color:#555;line-height:1.8;">
+          <li>GitHub Pages 在线访问</li>
+          <li>Forum（giscus）评论/讨论</li>
+          <li>彩色粒子背景 + 背景音乐（forum.html）</li>
         </ul>
 
-        <!-- 一起来看爱情公寓 -->
-        
-        <A HREF="https://www.youtube.com/watch?v=2tQoHJ61SUI">一起来看爱情公寓</A><BR>
+        <p style="margin-top:12px;margin-bottom:0;">
+          ▶ 视频链接：
+          <a class="link" href="https://www.youtube.com/watch?v=2tQoHJ61SUI" target="_blank" rel="noopener">
+            一起来看爱情公寓
+          </a>
+        </p>
+      </div>
+    </div>
+  </main>
 
-
-        
-        <a class="button" href="forum.html">进入 Forum 留言板</a>
-        <a class="button" href="Privado.html">前往 Privado 页面</a>
-
-    </main>
-
-    <footer>
-        © 2025 JobEntertainment · Powered by GitHub Pages
-    </footer>
+  <footer>© 2025 JobEntertainment · Powered by GitHub Pages</footer>
 </div>
 
 <script>
-    const PASSWORD = "cyxfd2000"; 
+  const PASSWORD = "cyxfd2000";
 
-    function checkPassword() {
-        const input = document.getElementById("password-input").value;
-
-        if (input === PASSWORD) {
-            document.getElementById("password-screen").style.display = "none";
-            document.getElementById("site-content").style.display = "block";
-        } else {
-            alert("密码错误！");
-        }
+  function checkPassword() {
+    const input = document.getElementById("password-input").value;
+    if (input === PASSWORD) {
+      document.getElementById("password-screen").style.display = "none";
+      document.getElementById("site-content").style.display = "block";
+    } else {
+      alert("密码错误！");
     }
+  }
 </script>
 
 </body>
