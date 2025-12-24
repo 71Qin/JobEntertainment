@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>Forum · JobEntertainment</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    header {
+      background-color: #222;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    main {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    a.button {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 10px 16px;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+    a.button:hover {
+      background-color: #0056b3;
+    }
+    .hint {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>💬 Forum / 留言板</h1>
+  <p>共享留言 · 基于 GitHub Discussions</p>
+</header>
+
+<main>
+  <a class="button" href="index.html">← 返回首页</a>
+
+  <p class="hint">
+    请使用 GitHub 账号登录后留言，  
+    你的 GitHub 昵称将作为用户名显示。
+  </p>
+
+  <!-- ✅ giscus 留言区 -->
+  <script src="https://giscus.app/client.js"
+        data-repo="71Qin/JobEntertainment"
+        data-repo-id="R_kgDOQt7F2w"
+        data-category="General"
+        data-category-id="DIC_kwDOQt7F284C0Mzm"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</main>
+
+</body>
+</html>
