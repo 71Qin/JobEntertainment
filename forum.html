@@ -7,11 +7,23 @@
 
   <style>
     body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background-color: #f0c8b3;
-      color: #333;
-    }
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    animation: rainbow 5s linear infinite;
+    color: #333;
+}
+
+@keyframes rainbow {
+    0%   { background: red; }
+    14%  { background: orange; }
+    28%  { background: yellow; }
+    42%  { background: green; }
+    56%  { background: cyan; }
+    70%  { background: blue; }
+    84%  { background: purple; }
+    100% { background: red; }
+}
+
     header {
       background-color: #e8dfe2;
       color: #1d1d1d;
@@ -19,6 +31,8 @@
       text-align: center;
     }
     main {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(6px);
       max-width: 900px;
       margin: 40px auto;
       padding: 20px;
