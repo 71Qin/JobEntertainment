@@ -33,7 +33,6 @@
         linear-gradient(180deg, #ffffff, #fbfbff);
     }
 
-    /* 粒子 canvas */
     #particles{
       position:fixed;
       inset:0;
@@ -52,16 +51,8 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow);
     }
-    header h1{
-      margin:0;
-      font-size:22px;
-      letter-spacing:.3px;
-    }
-    header p{
-      margin:8px 0 0;
-      color:var(--muted);
-      line-height:1.6;
-    }
+    header h1{margin:0;font-size:22px;letter-spacing:.3px;}
+    header p{margin:8px 0 0;color:var(--muted);line-height:1.6;}
 
     .toolbar{
       display:flex;
@@ -106,24 +97,6 @@
       border-radius:16px;
       border:1px solid rgba(0,0,0,.06);
       padding:14px;
-    }
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    label{font-size:13px;color:var(--muted)}
-    input[type="text"]{
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid rgba(0,0,0,.08);
-      outline:none;
-      min-width:220px;
-      background:#fff;
-    }
-    .chip{
-      padding:8px 12px;
-      border-radius:999px;
-      background:#fff;
-      border:1px solid rgba(0,0,0,.06);
-      font-size:13px;
-      color:#444;
     }
 
     .giscus-wrap{padding:10px 4px 0;}
@@ -187,30 +160,16 @@
     <h1>💬 Forum / 共享留言板</h1>
     <p>
       这里用 <strong>giscus</strong>（GitHub Discussions）做评论区/论坛。
-      你可以先设置一个“页面昵称”（只在本页显示），然后在下方发言。
     </p>
 
     <div class="toolbar">
       <button class="btn secondary" onclick="location.href='index.html'">← 返回首页</button>
-      <button class="btn" onclick="scrollToComments()">跳到留言区</button>
+      <button class="btn" onclick="window.scrollToComments()">跳到留言区</button>
     </div>
   </header>
 
   <main>
     <div class="grid">
-      <div class="panel">
-        <div class="row">
-          <div>
-            <label>你的页面昵称（仅本页显示，会保存在浏览器）</label><br/>
-            <input id="nickname" type="text" placeholder="比如：Qin / Feihan / 小伙伴" maxlength="24"/>
-          </div>
-          <div>
-            <button class="btn" onclick="saveNick()">保存昵称</button>
-          </div>
-          <div class="chip" id="nickDisplay">当前昵称：未设置</div>
-          <div class="chip">提示：浏览器通常禁止自动播放，需手动点播放器按钮一次</div>
-        </div>
-      </div>
 
       <div class="panel" id="comments">
         <h2 style="margin:0 0 8px;">📝 留言区（giscus）</h2>
@@ -237,7 +196,7 @@
 
   <footer>© 2025 JobEntertainment · Forum</footer>
 
-  <!-- 🎵 只保留这一套 BGM 播放器（Playlist） -->
+  <!-- 🎵 BGM 播放器（Playlist） -->
   <div id="bgm-player">
     <div class="bgm-title">🎵 Background Music</div>
     <audio id="bgm-audio" controls preload="metadata" playsinline></audio>
@@ -255,189 +214,7 @@
     <ul id="bgm-list"></ul>
   </div>
 
-  <script>
-    // ====== 昵称：localStorage ======
-    const nickInput = document.getElementById("nickname");
-    const nickDisplay = document.getElementById("nickDisplay");
-
-    function loadNick(){
-      const saved = localStorage.getItem("JE_NICKNAME") || "";
-      if(saved){
-        nickInput.value = saved;
-        nickDisplay.textContent = "当前昵称：" + saved;
-      }else{
-        nickDisplay.textContent = "当前昵称：未设置";
-      }
-    }
-
-    function saveNick(){
-      const v = (nickInput.value || "").trim();
-      if(!v){
-        localStorage.removeItem("JE_NICKNAME");
-        nickDisplay.textContent = "当前昵称：未设置";
-        alert("已清空昵称");
-        return;
-      }
-      localStorage.setItem("JE_NICKNAME", v);
-      nickDisplay.textContent = "当前昵称：" + v;
-      alert("昵称已保存");
-    }
-
-    function scrollToComments(){
-      document.getElementById("comments").scrollIntoView({behavior:"smooth", block:"start"});
-    }
-
-    loadNick();
-
-    // ====== 彩色粒子背景 ======
-    const canvas = document.getElementById("particles");
-    const ctx = canvas.getContext("2d");
-
-    let W, H, dpr;
-    function resize(){
-      dpr = Math.max(1, window.devicePixelRatio || 1);
-      W = canvas.width = Math.floor(window.innerWidth * dpr);
-      H = canvas.height = Math.floor(window.innerHeight * dpr);
-      canvas.style.width = window.innerWidth + "px";
-      canvas.style.height = window.innerHeight + "px";
-    }
-    window.addEventListener("resize", resize);
-    resize();
-
-    const pastel = [
-      "rgba(255, 173, 214, 0.55)",
-      "rgba(170, 216, 255, 0.55)",
-      "rgba(255, 231, 170, 0.55)",
-      "rgba(196, 255, 214, 0.55)",
-      "rgba(212, 192, 255, 0.55)"
-    ];
-
-    const N = 70;
-    const particles = Array.from({length:N}, () => ({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      r: (Math.random() * 3 + 1) * dpr,
-      vx: (Math.random() * 0.6 - 0.3) * dpr,
-      vy: (Math.random() * 0.6 - 0.3) * dpr,
-      c: pastel[(Math.random()*pastel.length)|0]
-    }));
-
-    function tick(){
-      ctx.clearRect(0,0,W,H);
-
-      // 轻微雾化底色（保持浅色）
-      ctx.fillStyle = "rgba(255,255,255,0.08)";
-      ctx.fillRect(0,0,W,H);
-
-      for(const p of particles){
-        p.x += p.vx;
-        p.y += p.vy;
-
-        if(p.x < -20*dpr) p.x = W + 20*dpr;
-        if(p.x > W + 20*dpr) p.x = -20*dpr;
-        if(p.y < -20*dpr) p.y = H + 20*dpr;
-        if(p.y > H + 20*dpr) p.y = -20*dpr;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-        ctx.fillStyle = p.c;
-        ctx.fill();
-      }
-
-      // 连接线
-      for(let i=0;i<N;i++){
-        for(let j=i+1;j<N;j++){
-          const a = particles[i], b = particles[j];
-          const dx = a.x - b.x, dy = a.y - b.y;
-          const dist = Math.sqrt(dx*dx + dy*dy);
-          const max = 140 * dpr;
-          if(dist < max){
-            const alpha = (1 - dist/max) * 0.12;
-            ctx.strokeStyle = `rgba(120,120,140,${alpha})`;
-            ctx.lineWidth = 1 * dpr;
-            ctx.beginPath();
-            ctx.moveTo(a.x,a.y);
-            ctx.lineTo(b.x,b.y);
-            ctx.stroke();
-          }
-        }
-      }
-
-      requestAnimationFrame(tick);
-    }
-    tick();
-
-    const PLAYLIST = [
-      { title: "I Miss You", src: "assets/I Miss You-罗百吉&宝贝.m4a" },
-      { title: "画", src: "assets/邓紫棋-画.m4a" },
-      { title: "Sakura Tears", src: "assets/Sakura Tears.m4a" },
-    ];
-
-    const audio = document.getElementById("bgm-audio");
-    const listEl = document.getElementById("bgm-list");
-    const playBtn = document.getElementById("playBtn");
-    const prevBtn = document.getElementById("prevBtn");
-    const nextBtn = document.getElementById("nextBtn");
-    const loopChk = document.getElementById("loopChk");
-
-    let idx = 0;
-
-    function renderList(){
-      listEl.innerHTML = "";
-      PLAYLIST.forEach((t, i) => {
-        const li = document.createElement("li");
-        li.textContent = t.title;
-        li.className = (i === idx) ? "active" : "";
-        li.onclick = async () => {
-          idx = i;
-          loadTrack();
-          // 点击列表属于“用户手势”，可以尝试直接播放
-          try{ await audio.play(); playBtn.textContent="⏸"; }catch(e){ playBtn.textContent="▶"; }
-        };
-        listEl.appendChild(li);
-      });
-    }
-
-    function loadTrack(){
-      audio.src = PLAYLIST[idx].src;
-      renderList();
-    }
-
-    function playOrPause(){
-      if (audio.paused){
-        audio.play().then(()=> playBtn.textContent="⏸").catch(()=>{});
-      }else{
-        audio.pause();
-        playBtn.textContent="▶";
-      }
-    }
-
-    function prev(){
-      idx = (idx - 1 + PLAYLIST.length) % PLAYLIST.length;
-      loadTrack();
-      audio.play().then(()=> playBtn.textContent="⏸").catch(()=>{ playBtn.textContent="▶"; });
-    }
-
-    function next(){
-      idx = (idx + 1) % PLAYLIST.length;
-      loadTrack();
-      audio.play().then(()=> playBtn.textContent="⏸").catch(()=>{ playBtn.textContent="▶"; });
-    }
-
-    audio.addEventListener("ended", () => {
-      if (!audio.loop) next();
-    });
-
-    loopChk.addEventListener("change", () => {
-      audio.loop = loopChk.checked;
-    });
-
-    playBtn.addEventListener("click", playOrPause);
-    prevBtn.addEventListener("click", prev);
-    nextBtn.addEventListener("click", next);
-
-    // 初始化
-    loadTrack();
-  </script>
+  <!-- ✅ 统一入口：模块化加载 -->
+  <script type="module" src="js/forum.app.js"></script>
 </body>
 </html>
