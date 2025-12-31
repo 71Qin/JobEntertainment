@@ -4,33 +4,322 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Games · 春游小分队</title>
+
   <style>
-    body{margin:0;font-family:Arial;background:#fafbff;color:#222}
-    header{padding:16px 18px;border-bottom:1px solid #eee;background:#fff;position:sticky;top:0}
-    .wrap{width:min(980px,92vw);margin:18px auto}
-    .bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    button{padding:10px 14px;border-radius:12px;border:1px solid #ddd;background:#fff;cursor:pointer}
-    button:hover{filter:brightness(.98)}
-    canvas{width:100%;max-width:900px;background:#fff;border:1px solid #eee;border-radius:14px;display:block;margin-top:14px}
-    #info{margin-top:10px;color:#555}
+    :root{
+      --bg1:#fff7fb;
+      --bg2:#f3fbff;
+      --bg3:#fffdf3;
+      --card:#ffffffcc;
+      --text:#2b2b2b;
+      --muted:#666;
+      --primary:#6aa9ff;
+      --primary2:#ff9fd2;
+      --shadow: 0 10px 30px rgba(0,0,0,.08);
+      --radius: 18px;
+      --line: rgba(0,0,0,.06);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Arial, Helvetica, sans-serif;
+      color:var(--text);
+      min-height:100vh;
+      background:
+        radial-gradient(900px 500px at 10% 10%, var(--bg1), transparent 60%),
+        radial-gradient(900px 500px at 90% 10%, var(--bg2), transparent 60%),
+        radial-gradient(900px 500px at 50% 90%, var(--bg3), transparent 60%),
+        linear-gradient(180deg, #ffffff, #fbfbff);
+    }
+
+    .wrap{
+      width:min(1040px, 92vw);
+      margin:22px auto 36px;
+    }
+
+    .topbar{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      padding:14px 16px;
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.7);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 14px;
+      z-index: 10;
+    }
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width: 220px;
+    }
+    .brand .title{
+      font-size:18px;
+      font-weight:700;
+      letter-spacing:.3px;
+      margin:0;
+      line-height:1.1;
+    }
+    .brand .sub{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-end;
+    }
+
+    .btn{
+      border:none;
+      cursor:pointer;
+      padding:10px 14px;
+      border-radius: 14px;
+      font-size:14px;
+      color:#fff;
+      background: linear-gradient(90deg, var(--primary), var(--primary2));
+      box-shadow: 0 10px 18px rgba(106,169,255,.20);
+      transition: transform .08s ease, filter .15s ease;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .btn:hover{filter:brightness(.98)}
+    .btn:active{transform: translateY(1px)}
+
+    .btn.ghost{
+      background:#fff;
+      color:var(--text);
+      border:1px solid var(--line);
+      box-shadow:none;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap:18px;
+      margin-top:18px;
+    }
+
+    @media (max-width: 960px){
+      .grid{grid-template-columns: 1fr}
+      .brand{min-width:auto}
+    }
+
+    .panel{
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.7);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:16px;
+    }
+
+    .cards{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+    }
+
+    .game-card{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius: 16px;
+      padding:14px 14px;
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      transition: transform .10s ease, box-shadow .15s ease;
+    }
+    .game-card:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(0,0,0,.06);
+    }
+    .badge{
+      width:44px;height:44px;border-radius:14px;
+      display:grid;place-items:center;
+      background: linear-gradient(135deg, #e8f3ff, #ffe8f5);
+      border:1px solid rgba(0,0,0,.05);
+      font-size:22px;
+      flex:0 0 auto;
+    }
+    .meta h3{
+      margin:0;
+      font-size:16px;
+    }
+    .meta p{
+      margin:6px 0 0 0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.55;
+    }
+    .meta .mini{
+      margin-top:10px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .hint{
+      margin-top:12px;
+      padding:10px 12px;
+      border-radius:14px;
+      background: #fff;
+      border:1px dashed rgba(0,0,0,.12);
+      color:#555;
+      font-size:13px;
+      line-height:1.6;
+    }
+
+    .stage{
+      padding:16px;
+    }
+
+    .stage-head{
+      display:flex;
+      gap:10px;
+      justify-content:space-between;
+      align-items:flex-start;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+
+    .stage-head .info{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.55;
+    }
+
+    .pill{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:8px 10px;
+      border-radius: 999px;
+      background:#fff;
+      border:1px solid var(--line);
+      color:#444;
+      font-size:13px;
+    }
+
+    canvas{
+      width:100%;
+      height:auto;
+      background:#ffffff;
+      border:1px solid rgba(0,0,0,.06);
+      border-radius: 16px;
+      display:block;
+      box-shadow: 0 12px 28px rgba(0,0,0,.06);
+    }
+
+    .footer{
+      margin-top:14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:10px;
+      color:#777;
+      font-size:13px;
+      padding:0 2px;
+    }
+
+    a.link{
+      color:#3a7ee6;
+      text-decoration:none;
+    }
+    a.link:hover{text-decoration:underline}
   </style>
 </head>
-<body>
-  <header>
-    <div class="wrap">
-      <div class="bar">
-        <button data-game="snake">🐍 贪吃蛇</button>
-        <button data-game="breakout">🧱 打砖块</button>
-        <button data-game="2048">🔢 2048</button>
-        <button id="stop">⏹ 停止</button>
-        <a href="index.html" style="margin-left:auto;text-decoration:none;color:#3a7ee6;">← 返回首页</a>
-      </div>
-      <div id="info">请选择一个游戏开始。</div>
-    </div>
-  </header>
 
+<body>
   <div class="wrap">
-    <canvas id="game" width="900" height="520"></canvas>
+    <div class="topbar">
+      <div class="brand">
+        <p class="title">🎮 Games · 春游小分队</p>
+        <p class="sub">选择游戏开始，右侧为游戏舞台</p>
+      </div>
+
+      <div class="actions">
+        <button class="btn ghost" id="stop">⏹ 停止</button>
+        <a class="btn" href="index.html" style="text-decoration:none;display:inline-block;">← 返回首页</a>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- 左侧：游戏卡片 -->
+      <section class="panel">
+        <div class="cards">
+          <div class="game-card">
+            <div class="badge">🐍</div>
+            <div class="meta">
+              <h3>贪吃蛇</h3>
+              <p>方向键控制移动，吃到粉色方块加分，撞墙/撞自己结束。</p>
+              <div class="mini">
+                <button class="btn" data-game="snake">开始 Snake</button>
+                <span class="pill">键盘：↑ ↓ ← →</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="game-card">
+            <div class="badge">🧱</div>
+            <div class="meta">
+              <h3>打砖块</h3>
+              <p>移动挡板反弹小球，清空砖块通关。支持鼠标与触摸。</p>
+              <div class="mini">
+                <button class="btn" data-game="breakout">开始 Breakout</button>
+                <span class="pill">操作：鼠标/触摸</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="game-card">
+            <div class="badge">🔢</div>
+            <div class="meta">
+              <h3>2048</h3>
+              <p>同数字合并翻倍，方向键或 WASD 均可操作。</p>
+              <div class="mini">
+                <button class="btn" data-game="2048">开始 2048</button>
+                <span class="pill">键盘：WASD / ↑↓←→</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hint">
+          小提示：如果画面被缩放到看不清，可把浏览器缩放调回 100%。
+        </div>
+      </section>
+
+      <!-- 右侧：舞台 -->
+      <section class="panel stage">
+        <div class="stage-head">
+          <div>
+            <p class="title" style="margin:0;font-weight:700;">游戏舞台</p>
+            <p class="info" id="info">请选择左侧一个游戏开始。</p>
+          </div>
+          <span class="pill">Canvas 900×520</span>
+        </div>
+
+        <canvas id="game" width="900" height="520"></canvas>
+
+        <div class="footer">
+          <span>© 2025 JobEntertainment · Games</span>
+        </div>
+      </section>
+    </div>
   </div>
 
   <script type="module" src="./js/games.js"></script>
